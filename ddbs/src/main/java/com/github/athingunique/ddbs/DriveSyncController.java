@@ -9,11 +9,18 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.github.athingunique.ddbs.drivelayer.DriveLayer;
 import com.github.athingunique.ddbs.drivelayer.FileResultsReadyCallback;
 import com.github.athingunique.ddbs.googleapi.DriveApiFactory;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.DriveApi;
+import com.google.android.gms.drive.Metadata;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,24 +33,71 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class DriveDataSyncController implements FileResultsReadyCallback {
+/**
+ * Master controller class for all Drive/Database sync operations.
+ * Requests are handled sequentially in a FIFO Queue; subsequent requests are not processed until
+ * the pending request returns.
+ * This has a slight performance hit but guarantees that the results will be returned in the order
+ * that they were requested.
+ */
+public class DriveSyncController implements FileResultsReadyCallback {
 
+    /**
+     * Flag for <b>putting</b> the local SQLite Database in the cloud
+     */
     public static final int PUT = 0;
+
+    /**
+     * Flag for <b>getting</b> the backup from the cloud
+     */
     public static final int GET = 1;
+
+    /**
+     * Flag indicating to perform a comparison on the local Database and the cloud backup to attempt
+     * to determine which is newer
+     */
     public static final int COMPARE = 2;
 
-    boolean waiting = false;
+    /**
+     * Flag indicating the current status of the request
+     */
+    boolean ongoingRequest = false;
 
+    /**
+     * Reference to the DriveLayer that provides abstracted access to the Drive AppFolder
+     */
     DriveLayer mDriveLayer;
+
+    /**
+     * Reference to the local SQLite Database (if it exists)
+     */
     File localDb;
+
+    /**
+     * Holds the DriveContentsResult of the Request to get the backup DriveFile. Held as a class var
+     * for reusability.
+     */
     DriveApi.DriveContentsResult result;
 
+    /**
+     * The request Queue
+     */
     Queue<Integer> mRequestQueue;
 
-    private CloudDatabaseNewerStatusCallback newerStatusCallback;
+    /**
+     * Callback to inform of local/cloud newer statuses
+     */
+    private NewerDatabaseCallback newerStatusCallback;
+
     private GoogleApiClient mDriveClient;
 
-    private DriveDataSyncController(final Context context, String dbName, CloudDatabaseNewerStatusCallback newerStatusCallback) {
+    /**
+     * Constructs a new {@link DriveSyncController}.
+     * @param context the Activity Context
+     * @param dbName the local SQLite Database name
+     * @param newerStatusCallback the callback to notify of local/cloud newer status
+     */
+    private DriveSyncController(final Context context, String dbName, NewerDatabaseCallback newerStatusCallback) {
         mDriveClient = DriveApiFactory.getClient(context, new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
@@ -58,7 +112,6 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
                 new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult) {
-                        // Resolve
                         // Resolve
                         if (!connectionResult.hasResolution()) {
                             // Show the localized error dialog
@@ -83,12 +136,26 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
         this.newerStatusCallback = newerStatusCallback;
     }
 
-    public static DriveDataSyncController get(Context context, String dbName, CloudDatabaseNewerStatusCallback newerStatusCallback) {
-        return new DriveDataSyncController(context, dbName, newerStatusCallback);
+    /**
+     * Retrieves a {@link DriveSyncController} singleton
+     * @param context the Activity Context
+     * @param dbName the local SQLite Database name
+     * @param newerStatusCallback the callback to notify of local/cloud newer status
+     * @return a {@link DriveSyncController}
+     */
+    public static DriveSyncController get(@NonNull Context context, @NonNull String dbName, @Nullable NewerDatabaseCallback newerStatusCallback) {
+        return new DriveSyncController(context, dbName, newerStatusCallback);
     }
 
-    public static DriveDataSyncController get(Context context, SQLiteOpenHelper dbHelper, CloudDatabaseNewerStatusCallback newerStatusCallback) {
-        return new DriveDataSyncController(context, dbHelper.getDatabaseName(), newerStatusCallback);
+    /**
+     * Retrieves a {@link DriveSyncController} singleton
+     * @param context the Activity Context
+     * @param dbHelper the local {@link SQLiteOpenHelper}
+     * @param newerStatusCallback the callback to notify of local/cloud newer status
+     * @return a {@link DriveSyncController}
+     */
+    public static DriveSyncController get(@NonNull Context context, @NonNull SQLiteOpenHelper dbHelper, @Nullable NewerDatabaseCallback newerStatusCallback) {
+        return new DriveSyncController(context, dbHelper.getDatabaseName(), newerStatusCallback);
     }
 
     private void queue(int key) {
@@ -97,9 +164,9 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
     }
 
     private void doQueue() {
-        if (!waiting) {
+        if (!ongoingRequest) {
             if (mRequestQueue.size() > 0) {
-                waiting = true;
+                ongoingRequest = true;
                 mDriveLayer.getFile(localDb.getName());
             }
         }
@@ -108,7 +175,7 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
     private int deQueue() {
         if (mRequestQueue.size() > 0) {
             int request = mRequestQueue.poll();
-            waiting = false;
+            ongoingRequest = false;
             doQueue();
             return request;
         }  else {
@@ -117,42 +184,66 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
         }
     }
 
-    public void pullDbFromCloud() {
+    /**
+     * Queues an asynchronous request to pull the SQLite Database stored in the Drive AppFolder and
+     * write it over the local Database
+     */
+    public void pullDbFromDrive() {
         queue(GET);
     }
 
-    public void putDbInCloud() {
+    /**
+     * Queues an asynchronous request to push the local SQLite Database to Drive, overwriting any
+     * instance of the Database currently in the AppFolder
+     */
+    public void putDbInDrive() {
         queue(PUT);
     }
 
-    public void isCloudDbNewer() {
+    /**
+     * Queues an asynchronous request to compare the last modified dates of the local and Drive
+     * Database files to determine which is newer.
+     * Will call back with true if the Drive database is newer and false if the local Database is
+     * newer.
+     */
+    public void isDriveDbNewer() {
         queue(COMPARE);
     }
 
-    public boolean compareCloudLocalNewer(Date cloudDeltaDate) {
+    /**
+     * Performs a comparison of the local and DriveFile Database files to determine which is newer
+     * @param driveDeltaDate the data of the last change to the DriveFile Database
+     * @return true if the DriveFile is newer, false if the local file is newer
+     */
+    public boolean compareDriveLocalNewer(Date driveDeltaDate) {
         long lastLocalUpdate = localDb.lastModified();
-        long lastCloudUpdate = cloudDeltaDate.getTime();
+        long lastDriveUpdate = driveDeltaDate.getTime();
 
         if (lastLocalUpdate <= 0) {
             return true;
         }
 
-        if (lastCloudUpdate <= 0) {
+        if (lastDriveUpdate <= 0) {
             return false;
         }
 
-        return lastCloudUpdate > lastLocalUpdate;
+        return lastDriveUpdate > lastLocalUpdate;
     }
 
 
+    /**
+     * Handles received DriveFile Metadata for comparing the newer status of the local and Drive
+     * copies of the Database
+     * @param m the received Metadata
+     */
     @Override
     public void onMetaDataReceived(Metadata m) {
         if (mRequestQueue.size() > 0) {
             if (mRequestQueue.peek() == COMPARE) {
                 mRequestQueue.poll();
 
-                if (compareCloudLocalNewer(m.getModifiedDate())) {
-                    newerStatusCallback.cloudNewer();
+                if (compareDriveLocalNewer(m.getModifiedDate())) {
+                    newerStatusCallback.driveNewer();
                 } else {
                     newerStatusCallback.localNewer();
                 }
@@ -162,6 +253,11 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
         }
     }
 
+    /**
+     * Handles the DriveContentsResult returned from the request to get the DriveFile of the
+     * Database.
+     * @param result the DriveContentsResult representing the Drive copy of the Database
+     */
     @Override
     public void onFileResultsReady(DriveApi.DriveContentsResult result) {
         this.result = result;
@@ -177,14 +273,21 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
                 writeCloudStreamToLocalDb(result.getDriveContents().getInputStream());
                 break;
         }
-        if (waiting) {
+        if (ongoingRequest) {
             mDriveLayer.getFile(localDb.getName());
         }
     }
 
+    /**
+     * Helper method to copy a file from an InputStream to an OutputStream
+     * @param in the InputStream to read from
+     * @param out the OutputStream to write to
+     */
     private void fileCopyHelper(InputStream in, OutputStream out) {
         byte[] buffer = new byte[4096];
         int n;
+
+        // IT SURE WOULD BE NICE IF TRY-WITH-RESOURCES WAS SUPPORTED IN OLDER SDK VERSIONS :(
         try {
             while ((n = in.read(buffer)) > 0) {
                 out.write(buffer, 0, n);
@@ -205,9 +308,14 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
         }
     }
 
+    /**
+     * Helper method to write the local SQLite Database to the DriveFile in the AppFolder
+     * @param outputStream the OutputStream of the DriveFile to write to
+     */
     private void writeLocalDbToCloudStream(OutputStream outputStream) {
         InputStream localDbInputStream = null;
 
+        // NOPE, STILL NO TRY-WITH-RESOURCES :((
         try {
 
             localDbInputStream = new FileInputStream(localDb);
@@ -229,10 +337,15 @@ public class DriveDataSyncController implements FileResultsReadyCallback {
         }
     }
 
+    /**
+     * Helper method to write the DriveFile Database to the local SQLite Database file
+     * @param inputStream the InputStream of the DriveFile to read data from
+     */
     private void writeCloudStreamToLocalDb(InputStream inputStream) {
 
         OutputStream localDbOutputStream = null;
 
+        // PLEASE IT WOULD BE SO MUCH NICER :(((  [yes, I know this isn't possible. I'm just complaining]
         try {
 
             localDbOutputStream = new FileOutputStream(localDb);

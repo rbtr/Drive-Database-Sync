@@ -1,4 +1,4 @@
-package com.e13.ddbs_example;
+package com.github.athingunique.ddbs_ex;
 
 /*
  * Created by evan on 4/28/15.
@@ -12,6 +12,9 @@ import android.database.sqlite.SQLiteStatement;
 
 import java.util.Date;
 
+/**
+ * A simple SQLiteOpenHelper subclass for demonstration purposes
+ */
 public class DbHelper extends SQLiteOpenHelper {
 
     private static final int DB_VER = 1;

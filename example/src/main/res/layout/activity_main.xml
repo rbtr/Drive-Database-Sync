@@ -1,0 +1,72 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".MainActivity"
+    >
+
+    <LinearLayout
+        android:id="@+id/button_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <Button
+            android:id="@+id/button_find_newer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Newer"
+            />
+
+        <Button
+            android:id="@+id/button_pull_cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pull"
+            />
+
+        <Button
+            android:id="@+id/button_push_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Push"
+            />
+
+        <Button
+            android:id="@+id/button_show_latest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest"
+            />
+
+        <Button
+            android:id="@+id/button_put_now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Put"
+            />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/button_holder"
+        >
+
+        <LinearLayout
+            android:id="@+id/linearlayout_update_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            />
+
+    </ScrollView>
+
+</RelativeLayout>

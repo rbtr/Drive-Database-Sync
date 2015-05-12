@@ -1,7 +1,7 @@
-package com.e13.ddbs_example;
+package com.github.athingunique.ddbs_ex;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -9,8 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.e13.ddbs.CloudDatabaseNewerStatusCallback;
-import com.e13.ddbs.DriveDataSyncController;
+import com.github.athingunique.ddbs.NewerDatabaseCallback;
+import com.github.athingunique.ddbs.DriveSyncController;
 
 import java.util.Date;
 
@@ -19,50 +19,56 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class MainActivity extends ActionBarActivity implements CloudDatabaseNewerStatusCallback {
+/**
+ * A simple Activity class that displays a list of some data in a local SQLite Database for
+ * demonstration purposes
+ */
+public class MainActivity extends AppCompatActivity implements NewerDatabaseCallback {
 
-    /**
-     * Pressing this button triggers a comparison to determine if the cloud db is newer than the
-     * local db. Results are delivered to the CloudDatabaseNewerStatusCallback.
-     */
     @InjectView(R.id.button_find_newer)
     Button mButtonFindNewer;
 
+    /**
+     * Pressing this button triggers a comparison to determine if the cloud db is newer than the
+     * local db. Results are delivered to the NewerDatabaseCallback.
+     */
     @OnClick(R.id.button_find_newer)
     public void findNewer() {
-        mSyncController.isCloudDbNewer();
+        mSyncController.isDriveDbNewer();
     }
 
+
+    @InjectView(R.id.button_pull_cloud)
+    Button mButtonPullCloud;
 
     /**
      * Pressing this button triggers a pull from the cloud db that overwrites the local db.
      */
-    @InjectView(R.id.button_pull_cloud)
-    Button mButtonPullCloud;
-
     @OnClick(R.id.button_pull_cloud)
     public void pullCloud() {
-        mSyncController.pullDbFromCloud();
+        mSyncController.pullDbFromDrive();
     }
+
+
+    @InjectView(R.id.button_push_local)
+    Button mButtonPushLocal;
 
     /**
      * Pressing this button triggers a push of the local db to the cloud db.
      */
-    @InjectView(R.id.button_push_local)
-    Button mButtonPushLocal;
-
     @OnClick(R.id.button_push_local)
     public void pushLocal() {
-        mSyncController.putDbInCloud();
+        mSyncController.putDbInDrive();
     }
+
+
+    @InjectView(R.id.button_show_latest)
+    Button mButtonShowLatest;
 
     /**
      * Pressing this button triggers a poll of the local database to retrieve the newest Date
      * stored in it. Occurs synchronously.
      */
-    @InjectView(R.id.button_show_latest)
-    Button mButtonShowLatest;
-
     @OnClick(R.id.button_show_latest)
     public void pollLatest() {
         Date date = mDbHelper.getDateFromDatabase();
@@ -91,15 +97,26 @@ public class MainActivity extends ActionBarActivity implements CloudDatabaseNewe
     @InjectView(R.id.linearlayout_update_container)
     LinearLayout mUpdateContainer;
 
+    /**
+     * Reference to the demo SQLiteOpenHelper
+     */
     private DbHelper mDbHelper;
-    private DriveDataSyncController mSyncController;
+
+    /**
+     * Reference to the library DriveSyncController that handles interfacing the local SQLite DB and
+     * the Drive backup.
+     */
+    private DriveSyncController mSyncController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Init the SQLiteOpenHelper
         mDbHelper = new DbHelper(this);
-        mSyncController = DriveDataSyncController.get(this, mDbHelper, this);
+
+        // Init the ddbs DriveSyncController
+        mSyncController = DriveSyncController.get(this, mDbHelper, this);
 
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
@@ -125,14 +142,14 @@ public class MainActivity extends ActionBarActivity implements CloudDatabaseNewe
     }
 
     @Override
-    public void cloudNewer() {
-        mSyncController.pullDbFromCloud();
+    public void driveNewer() {
+        mSyncController.pullDbFromDrive();
         toaster("Cloud newer");
     }
 
     @Override
     public void localNewer() {
-        mSyncController.putDbInCloud();
+        mSyncController.putDbInDrive();
         toaster("Local newer");
     }
 

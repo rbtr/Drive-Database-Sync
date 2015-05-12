@@ -1,1 +1,1 @@
-include ':app', ':ddbs'
+include ':example', ':ddbs'
