@@ -22,7 +22,7 @@ Still in active development, v1 not finalized.
 Thanks to Google for creating something like this for the old Drive API which inspired me, and again to Google for not updating their demo and motivating me.
 
 # Author(s)
-Developed by Evan Baker (http://e13engineering.com)
+Developed by [Evan Baker](http://e13engineering.com)
 
 #License
 
