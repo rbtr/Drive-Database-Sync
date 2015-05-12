@@ -27,3 +27,6 @@ proguard/
 
 *.iml
 .idea/
+
+# Private gradle.roperties
+ddbs/gradle.properties
