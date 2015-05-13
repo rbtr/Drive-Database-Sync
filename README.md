@@ -4,33 +4,33 @@ A Google Drive sync layer for Android SQLite Databases
 # Include in your project
 ## Gradle
 Add the noted lines from the following snippet to your project's `build.gradle`
-```
-	repositories {
+```javascript
+repositories {
 
-		... // Your repos
+	... // Your repos
 
-	    // Include this line to add mavenCentral
-	    mavenCentral()
+    // Include this line to add mavenCentral
+    mavenCentral()
 
-	    // Include these lines to add the staging repo
-	    // maven { 
-	    //	url "https://oss.sonatype.org/content/repositories/snapshots" 
-	    //}
-	}
+    // Include these lines to add the staging repo
+    // maven { 
+    //	url "https://oss.sonatype.org/content/repositories/snapshots" 
+    //}
+}
 
 
-	dependencies {
+dependencies {
 
-	    ... // Your dependencies
+    ... // Your dependencies
 
-	    // Include this line to pull from the release repo
-	    compile 'com.github.athingunique:ddbs:X.X.X@aar'
+    // Include this line to pull from the release repo
+    compile 'com.github.athingunique:ddbs:X.X.X@aar'
 
-	    // Include this line to pull from the snapshot repo 
-	    // (replace X.X.X with the version number)
-	    // compile 'com.github.athingunique:ddbs:X.X.X-SNAPSHOT@aar'
+    // Include this line to pull from the snapshot repo 
+    // (replace X.X.X with the version number)
+    // compile 'com.github.athingunique:ddbs:X.X.X-SNAPSHOT@aar'
 
-	}
+}
 ```
 
 # How to use
