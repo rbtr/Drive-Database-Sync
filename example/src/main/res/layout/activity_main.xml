@@ -21,35 +21,35 @@
             android:id="@+id/button_find_newer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Newer"
+            android:text="Check newer"
             />
 
         <Button
             android:id="@+id/button_pull_cloud"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pull"
+            android:text="Pull Drive > Local"
             />
 
         <Button
             android:id="@+id/button_push_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Push"
+            android:text="Push Local > Drive"
             />
 
         <Button
             android:id="@+id/button_show_latest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Latest"
+            android:text="Open Local"
             />
 
         <Button
             android:id="@+id/button_put_now"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Put"
+            android:text="Put in Local"
             />
 
     </LinearLayout>

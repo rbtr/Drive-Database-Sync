@@ -66,17 +66,19 @@ public class MainActivity extends AppCompatActivity implements NewerDatabaseCall
     Button mButtonShowLatest;
 
     /**
-     * Pressing this button triggers a poll of the local database to retrieve the newest Date
+     * Pressing this button triggers a poll of the local database to retrieve the Dates
      * stored in it. Occurs synchronously.
      */
     @OnClick(R.id.button_show_latest)
     public void pollLatest() {
-        Date date = mDbHelper.getDateFromDatabase();
+        Date[] dates = mDbHelper.getDatesFromDatabase();
 
-        TextView tv = new TextView(this);
-        tv.setText(date.toString());
+        for (Date date : dates) {
+            TextView tv = new TextView(this);
+            tv.setText(date.toString());
 
-        mUpdateContainer.addView(tv);
+            mUpdateContainer.addView(tv);
+        }
     }
 
     /**

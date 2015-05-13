@@ -24,6 +24,7 @@ dependencies {
     ... // Your dependencies
 
     // Include this line to pull from the release repo
+    // (replace X.X.X with the version number)
     compile 'com.github.athingunique:ddbs:X.X.X@aar'
 
     // Include this line to pull from the snapshot repo 

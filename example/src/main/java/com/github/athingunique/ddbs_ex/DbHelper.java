@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A simple SQLiteOpenHelper subclass for demonstration purposes
@@ -72,6 +74,33 @@ public class DbHelper extends SQLiteOpenHelper {
         return new Date(dateTime);
     }
 
+    public Date[] getDatesFromDatabase() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE,
+                new String[]{DATE_COL},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        List<Date> dates = new LinkedList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                Date date = new Date(cursor.getLong(0));
+                dates.add(date);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return dates.toArray(new Date[dates.size()]);
+    }
+
     private SQLiteStatement makeInsertStatement(SQLiteDatabase db) {
         String statement =  "INSERT OR REPLACE INTO " + TABLE + " (" + DATE_COL + ") VALUES (?);";
         return db.compileStatement(statement);
@@ -81,5 +110,6 @@ public class DbHelper extends SQLiteOpenHelper {
     public void clearDatabase() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE);
+        onCreate(db);
     }
 }
