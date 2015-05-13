@@ -19,9 +19,23 @@ android {
     }
 }
 
+repositories {
+
+    // Include this line to add mavenCentral
+    mavenCentral()
+
+    // Include this line to add the staging repo
+    // maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile project(':ddbs')
+
+    // Include this line to pull from the snapshot repo
+    // compile 'com.github.athingunique:ddbs:0.0.1-SNAPSHOT@aar'
+
 }
