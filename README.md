@@ -1,13 +1,40 @@
 # Drive-Database-Sync
 A Google Drive sync layer for Android SQLite Databases
 
-# Including in your project
-## Maven
-Maven integration is coming as soon as possible.
-Until then, clone and import as usual for Android Libraries.
+# Include in your project
+## Gradle
+Add the noted lines from the following snippet to your project's `build.gradle`
+```
+	repositories {
+
+		... // Your repos
+
+	    // Include this line to add mavenCentral
+	    mavenCentral()
+
+	    // Include these lines to add the staging repo
+	    // maven { 
+	    //	url "https://oss.sonatype.org/content/repositories/snapshots" 
+	    //}
+	}
+
+
+	dependencies {
+
+	    ... // Your dependencies
+
+	    // Include this line to pull from the release repo
+	    compile 'com.github.athingunique:ddbs:X.X.X@aar'
+
+	    // Include this line to pull from the snapshot repo 
+	    // (replace X.X.X with the version number)
+	    // compile 'com.github.athingunique:ddbs:X.X.X-SNAPSHOT@aar'
+
+	}
+```
 
 # How to use
-See Example app and JavaDoc provided.
+See Example app and [JavaDoc](https://athingunique.github.io/ddbs-doc/) provided.
 
 # Example
 The Example application demos putting some data (the current date) in a database, putting the database in Drive, deleting the local database, pulling the database out of Drive, etc. It should give you a basic idea of how to interface with this Library.
@@ -24,7 +51,7 @@ Thanks to Google for creating something like this for the old Drive API which in
 # Author(s)
 Developed by [Evan Baker](http://e13engineering.com)
 
-#License
+# License
 
 	Apache v2
 
