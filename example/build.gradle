@@ -8,8 +8,8 @@ android {
         applicationId "com.github.athingunique.ddbs_ex"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "0.0.2"
     }
     buildTypes {
         release {
@@ -34,6 +34,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile project(':ddbs')
+
+    // Include this line to pull from the release repo
+    // compile 'com.github.athingunique:ddbs:0.0.1@aar'
 
     // Include this line to pull from the snapshot repo
     // compile 'com.github.athingunique:ddbs:0.0.1-SNAPSHOT@aar'

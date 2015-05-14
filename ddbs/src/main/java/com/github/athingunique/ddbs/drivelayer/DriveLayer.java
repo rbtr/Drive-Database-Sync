@@ -82,7 +82,7 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
 
         DriveFio driveFio = new DriveFio(this);
         DriveFile driveFile = driveFio.getDriveFileFromMetadata(mDriveClient, m);
-        driveFio.loadDriveFile(mDriveClient, driveFile);
+        driveFio.loadDriveFile(mDriveClient, driveFile, callback.openModeWriteable());
     }
 
     /**
@@ -110,6 +110,6 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
             Log.e("DriveLayer", "Error creating file");
         }
 
-        new DriveFio(this).loadDriveFile(mDriveClient, result.getDriveFile());
+        new DriveFio(this).loadDriveFile(mDriveClient, result.getDriveFile(), callback.openModeWriteable());
     }
 }

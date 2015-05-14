@@ -71,9 +71,9 @@ class DriveFio implements ResultCallback {
      * @param driveClient the {@link GoogleApiClient} to use for this Drive request
      * @param driveFile the {@link DriveFile} to request to open
      */
-    public void loadDriveFile(GoogleApiClient driveClient, DriveFile driveFile) {
-        // TODO: Make the MODE switchable so that this method can be reused for reading and writing
-        driveFile.open(driveClient, DriveFile.MODE_READ_ONLY, null).setResultCallback(this);
+    public void loadDriveFile(GoogleApiClient driveClient, DriveFile driveFile, boolean writeable) {
+        int mode = writeable ? DriveFile.MODE_WRITE_ONLY : DriveFile.MODE_READ_ONLY;
+        driveFile.open(driveClient, mode, null).setResultCallback(this);
     }
 
     /**

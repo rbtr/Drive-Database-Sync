@@ -1,14 +1,15 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.athingunique.ddbs">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.athingunique.ddbs"
+    >
 
     <application
-        android:allowBackup="true"
-        android:label="@string/app_name"
         >
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"
+            />
 
     </application>
 

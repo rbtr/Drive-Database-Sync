@@ -24,4 +24,10 @@ public interface FileResultsReadyCallback {
      * @param result the DriveContentsResult indicating the status of request
      */
     void onFileResultsReady(DriveApi.DriveContentsResult result);
+
+    /**
+     * Helper method that returns if the DriveFile should be opened as RW or just R
+     * @return the mode to open the DriveFile. True = RW, False = R.
+     */
+    boolean openModeWriteable();
 }

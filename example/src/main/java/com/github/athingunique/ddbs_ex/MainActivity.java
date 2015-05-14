@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements NewerDatabaseCall
      */
     @OnClick(R.id.button_show_latest)
     public void pollLatest() {
+        mUpdateContainer.removeAllViews();
+
         Date[] dates = mDbHelper.getDatesFromDatabase();
 
         for (Date date : dates) {
@@ -91,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements NewerDatabaseCall
     public void putNow() {
         Date now = new Date();
         mDbHelper.putDateInDatabase(now);
+
+        pollLatest();
     }
 
     /**

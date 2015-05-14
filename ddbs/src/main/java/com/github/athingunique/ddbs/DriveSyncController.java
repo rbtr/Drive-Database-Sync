@@ -239,6 +239,7 @@ public class DriveSyncController implements FileResultsReadyCallback {
     @Override
     public void onMetaDataReceived(Metadata m) {
         if (mRequestQueue.size() > 0) {
+
             if (mRequestQueue.peek() == COMPARE) {
                 mRequestQueue.poll();
 
@@ -275,6 +276,23 @@ public class DriveSyncController implements FileResultsReadyCallback {
         }
         if (ongoingRequest) {
             mDriveLayer.getFile(localDb.getName());
+        }
+    }
+
+    /**
+     * Helper method that returns if the DriveFile should be opened as RW or just R
+     * @return the mode to open the DriveFile. True = RW, False = R.
+     */
+    @Override
+    public boolean openModeWriteable() {
+        switch (mRequestQueue.peek()) {
+            case PUT:
+                return true;
+
+            case COMPARE: // fall through
+            case GET:
+            default:
+                return false;
         }
     }
 
