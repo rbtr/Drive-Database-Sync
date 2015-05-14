@@ -36,6 +36,7 @@ dependencies {
 
 # How to use
 See Example app and [JavaDoc](https://athingunique.github.io/ddbs-doc/) provided.
+This is currently a proof-of-concept style Library; as such, some implementation details (like thread-safety) are left to you to implement.
 
 # Example
 The Example application demos putting some data (the current date) in a database, putting the database in Drive, deleting the local database, pulling the database out of Drive, etc. It should give you a basic idea of how to interface with this Library.
