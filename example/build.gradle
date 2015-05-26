@@ -1,9 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        releaseKeys {
+            try {
+                keyAlias 'e13.release'
+                keyPassword KEY_PASSWORD
+                storeFile file('/Users/evan/Projects/Android/common/Signing Keys/public release key/e13.release.keystore')
+                storePassword KEYSTORE_PASSWORD
+            }
+            catch (ignored) {
+                throw new InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
+            }
+        }
+    }
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
-
     defaultConfig {
         applicationId "com.github.athingunique.ddbs_ex"
         minSdkVersion 14
@@ -15,30 +27,20 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseKeys
+        }
+        debug {
+            signingConfig signingConfigs.releaseKeys
         }
     }
 }
-
-repositories {
-
-    // Include this line to add mavenCentral
-    mavenCentral()
-
-    // Include this line to add the staging repo
-    // maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-}
-
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile project(':ddbs')
 
     // Include this line to pull from the release repo
-    // compile 'com.github.athingunique:ddbs:0.0.1@aar'
-
-    // Include this line to pull from the snapshot repo
-    // compile 'com.github.athingunique:ddbs:0.0.1-SNAPSHOT@aar'
-
+    // compile 'com.github.athingunique:ddbs:0.0.4'
+    compile project(':ddbs')
 }

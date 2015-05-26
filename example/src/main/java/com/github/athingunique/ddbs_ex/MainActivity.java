@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NewerDatabaseCall
         mDbHelper = new DbHelper(this);
 
         // Init the ddbs DriveSyncController
-        mSyncController = DriveSyncController.get(this, mDbHelper, this);
+        mSyncController = DriveSyncController.get(this, mDbHelper, this).setDebug(true);
 
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);

@@ -105,6 +105,7 @@ public class DriveSyncController implements FileResultsReadyCallback {
                         if (debug) {
                             Log.d("DriveSyncController", "mDriveClient Connected");
                         }
+                        doQueue();
                     }
 
                     @Override
@@ -209,11 +210,13 @@ public class DriveSyncController implements FileResultsReadyCallback {
     }
 
     private void doQueue() {
-        if (!ongoingRequest) {
+        if (!ongoingRequest && mDriveClient.isConnected()) {
             if (mRequestQueue.size() > 0) {
                 ongoingRequest = true;
                 mDriveLayer.getFile(localDb.getName());
             }
+        } else if (!mDriveClient.isConnected()) {
+            mDriveClient.connect();
         }
     }
 
@@ -234,6 +237,9 @@ public class DriveSyncController implements FileResultsReadyCallback {
      * write it over the local Database
      */
     public void pullDbFromDrive() {
+        if (!mDriveClient.isConnected()) {
+            mDriveClient.connect();
+        }
         queue(GET);
     }
 
@@ -242,6 +248,9 @@ public class DriveSyncController implements FileResultsReadyCallback {
      * instance of the Database currently in the AppFolder
      */
     public void putDbInDrive() {
+        if (!mDriveClient.isConnected()) {
+            mDriveClient.connect();
+        }
         queue(PUT);
     }
 
@@ -252,6 +261,9 @@ public class DriveSyncController implements FileResultsReadyCallback {
      * newer.
      */
     public void isDriveDbNewer() {
+        if (!mDriveClient.isConnected()) {
+            mDriveClient.connect();
+        }
         queue(COMPARE);
     }
 
@@ -260,7 +272,7 @@ public class DriveSyncController implements FileResultsReadyCallback {
      * @param driveDeltaDate the data of the last change to the DriveFile Database
      * @return true if the DriveFile is newer, false if the local file is newer
      */
-    public boolean compareDriveLocalNewer(Date driveDeltaDate) {
+    private boolean compareDriveLocalNewer(Date driveDeltaDate) {
         long lastLocalUpdate = localDb.lastModified();
         long lastDriveUpdate = driveDeltaDate.getTime();
 
@@ -306,6 +318,11 @@ public class DriveSyncController implements FileResultsReadyCallback {
      */
     @Override
     public void onFileResultsReady(DriveApi.DriveContentsResult result) {
+
+        if (!mDriveClient.isConnected()) {
+            mDriveClient.connect();
+        }
+
         this.result = result;
 
         int which = deQueue();

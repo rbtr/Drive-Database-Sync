@@ -22,6 +22,7 @@ public abstract class DriveApiFactory {
      * @param context the Activity Context
      * @param connectionCallbacks the {@link GoogleApiClient.ConnectionCallbacks}
      * @param connectionFailedListener the {@link GoogleApiClient.OnConnectionFailedListener}
+     * @param debug whether to log debug messages
      * @return a fully constructed, Drive equipped GoogleApiClient
      */
     public static GoogleApiClient getClient(Context context,
@@ -37,6 +38,7 @@ public abstract class DriveApiFactory {
      * @param context the Activity Context
      * @param connectionCallbacks the {@link GoogleApiClient.ConnectionCallbacks}
      * @param connectionFailedListener the {@link GoogleApiClient.OnConnectionFailedListener}
+     * @param debug whether to log debug messages
      * @return a fully constructed, Drive equipped GoogleApiClient
      */
     private static GoogleApiClient buildDriveClient(Context context,
