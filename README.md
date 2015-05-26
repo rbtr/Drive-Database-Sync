@@ -3,22 +3,9 @@ A Google Drive sync layer for Android SQLite Databases
 
 # Include in your project
 ## Gradle
-Add the noted lines from the following snippet to your project's `build.gradle`
+This project is hosted on JCenter. To include it, add the noted lines from the following snippet to your project's `build.gradle`
 ```javascript
-repositories {
-
-	... // Your repos
-
-    // Include this line to add mavenCentral
-    mavenCentral()
-
-    // Include these lines to add the staging repo
-    // maven { 
-    //	url "https://oss.sonatype.org/content/repositories/snapshots" 
-    //}
-}
-
-
+...
 dependencies {
 
     ... // Your dependencies
@@ -45,7 +32,7 @@ The Example application demos putting some data (the current date) in a database
 [JavaDoc](https://athingunique.github.io/ddbs-doc/)
 
 # Version notes
-Still in active development, v1 not finalized.
+[0.0.3] Pushed to JCenter
 
 # Credits
 Thanks to Google for creating something like this for the old Drive API which inspired me, and again to Google for not updating their demo and motivating me.

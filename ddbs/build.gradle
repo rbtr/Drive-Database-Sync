@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'bintray-release'
 
 android {
     compileSdkVersion 22
@@ -22,4 +23,15 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.google.android.gms:play-services-drive:7.3.0'
+}
+
+publish {
+    userOrg = 'athingunique'
+    groupId = 'com.github'
+    artifactId = 'ddbs'
+    publishVersion = '0.0.2'
+    description = 'A Google Drive Sync Layer for Android SQLite Database'
+    website = 'https://github.com/athingunique/Drive-Database-Sync'
+    issueTracker = "${website}/issues"
+    repository = "${website}.git"
 }
