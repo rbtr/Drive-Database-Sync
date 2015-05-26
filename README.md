@@ -4,22 +4,22 @@ A Google Drive sync layer for Android SQLite Databases
 # Include in your project
 ## Gradle
 This project is hosted on JCenter. To include it, add the noted lines from the following snippet to your project's `build.gradle`
-```javascript
-...
-dependencies {
 
-    ... // Your dependencies
+	...
+	dependencies {
+	
+    	... // Your dependencies
+	
+    	// Include this line to pull from the release repo
+    	// (replace X.X.X with the version number)
+    	compile 'com.github.athingunique:ddbs:X.X.X@aar'
 
-    // Include this line to pull from the release repo
-    // (replace X.X.X with the version number)
-    compile 'com.github.athingunique:ddbs:X.X.X@aar'
+    	// Include this line to pull from the snapshot repo 
+    	// (replace X.X.X with the version number)
+    	// compile 'com.github.athingunique:ddbs:X.X.X-SNAPSHOT@aar'
+	
+	}
 
-    // Include this line to pull from the snapshot repo 
-    // (replace X.X.X with the version number)
-    // compile 'com.github.athingunique:ddbs:X.X.X-SNAPSHOT@aar'
-
-}
-```
 
 # How to use
 See Example app and [JavaDoc](https://athingunique.github.io/ddbs-doc/) provided.
