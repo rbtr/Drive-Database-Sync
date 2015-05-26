@@ -45,10 +45,28 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
     }
 
     /**
+     * Flag indicating to log debug messages
+     */
+    private static boolean debug;
+
+    /**
+     * Method to set the debug flag
+     * @param debug the debug status
+     * @return this, for chaining
+     */
+    public DriveLayer setDebug(boolean debug) {
+        DriveLayer.debug = debug;
+        return this;
+    }
+
+    /**
      * Helper method that retrieves the application's AppFolder
      * @return the DriveFolder representing the AppFolder
      */
     private DriveFolder getAppFolder() {
+        if (debug) {
+            Log.d("DriveLayer", "Getting AppFolder");
+        }
         return Drive.DriveApi.getAppFolder(mDriveClient);
     }
 
@@ -58,6 +76,10 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
      * @param driveFileName the filename to query
      */
     public void getFile(String driveFileName) {
+        if (debug) {
+            Log.d("DriveLayer", "Getting File");
+            Log.d("Filename", driveFileName);
+        }
         this.driveFileName = driveFileName;
         new Querier(this).findFile(mDriveClient, getAppFolder(), driveFileName);
     }
@@ -68,6 +90,9 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
      */
     @Override
     public void onNoQuerierResult() {
+        if (debug) {
+            Log.d("DriveLayer", "No Query results");
+        }
         // File not found, create it
         new DriveFio(this).createFile(mDriveClient, getAppFolder(), driveFileName);
     }
@@ -78,6 +103,10 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
      */
     @Override
     public void onQuerierResult(Metadata m) {
+        if (debug) {
+            Log.d("DriveLayer", "Got Query results");
+        }
+
         callback.onMetaDataReceived(m);
 
         DriveFio driveFio = new DriveFio(this);
@@ -93,6 +122,9 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
      */
     @Override
     public void onFioResult(DriveApi.DriveContentsResult result) {
+        if (debug) {
+            Log.d("DriveLayer", "Got Fio result");
+        }
         callback.onFileResultsReady(result);
     }
 
@@ -106,6 +138,10 @@ public class DriveLayer implements DriveFioResultsCallback, QuerierResultCallbac
      */
     @Override
     public void onFileCreatedResult(DriveFolder.DriveFileResult result) {
+        if (debug) {
+            Log.d("DriveLayer", "File created");
+        }
+
         if (!result.getStatus().isSuccess()) {
             Log.e("DriveLayer", "Error creating file");
         }

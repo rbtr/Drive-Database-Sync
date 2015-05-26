@@ -26,12 +26,13 @@ public abstract class DriveApiFactory {
      */
     public static GoogleApiClient getClient(Context context,
                                             GoogleApiClient.ConnectionCallbacks connectionCallbacks,
-                                            GoogleApiClient.OnConnectionFailedListener connectionFailedListener) {
-        return buildDriveClient(context, connectionCallbacks, connectionFailedListener);
+                                            GoogleApiClient.OnConnectionFailedListener connectionFailedListener,
+                                            boolean debug) {
+        return buildDriveClient(context, connectionCallbacks, connectionFailedListener, debug);
     }
 
     /**
-     * GoogleApiClient builder method. This is called by the Factory method {@link #getClient(Context, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener)}.
+     * GoogleApiClient builder method. This is called by the Factory method {@link #getClient(Context, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, boolean)}.
      * That might seem redundant, but it's for future-proofing the API.
      * @param context the Activity Context
      * @param connectionCallbacks the {@link GoogleApiClient.ConnectionCallbacks}
@@ -40,7 +41,8 @@ public abstract class DriveApiFactory {
      */
     private static GoogleApiClient buildDriveClient(Context context,
                                                     final GoogleApiClient.ConnectionCallbacks connectionCallbacks,
-                                                    final GoogleApiClient.OnConnectionFailedListener connectionFailedListener) {
+                                                    final GoogleApiClient.OnConnectionFailedListener connectionFailedListener,
+                                                    final boolean debug) {
         return new GoogleApiClient.Builder(context)
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_APPFOLDER)
@@ -48,7 +50,10 @@ public abstract class DriveApiFactory {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        Log.d("DriveApiClient", "Connected");
+                        if (debug) {
+                            Log.d("DriveApiClient", "Connected");
+                        }
+
                         if (connectionCallbacks != null) {
                             connectionCallbacks.onConnected(bundle);
                         }
@@ -56,7 +61,10 @@ public abstract class DriveApiFactory {
 
                     @Override
                     public void onConnectionSuspended(int i) {
-                        Log.d("DriveApiClient", "Suspended");
+                        if (debug) {
+                            Log.d("DriveApiClient", "Suspended");
+                        }
+
                         if (connectionCallbacks != null) {
                             connectionCallbacks.onConnectionSuspended(i);
                         }
@@ -65,7 +73,10 @@ public abstract class DriveApiFactory {
                 .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult) {
-                        Log.d("DriveApiClient", "Connection failed. Cause: " + connectionResult.toString());
+                        if (debug) {
+                            Log.d("DriveApiClient", "Connection failed. Cause: " + connectionResult.toString());
+                        }
+
                         if (connectionFailedListener != null) {
                             connectionFailedListener.onConnectionFailed(connectionResult);
                         }

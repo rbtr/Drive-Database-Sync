@@ -102,16 +102,28 @@ public class DriveSyncController implements FileResultsReadyCallback {
                     @Override
                     public void onConnected(Bundle bundle) {
                         // mDriveLayer.getFile(localDb.getName());
+                        if (debug) {
+                            Log.d("DriveSyncController", "mDriveClient Connected");
+                        }
                     }
 
                     @Override
                     public void onConnectionSuspended(int i) {
                         // Don't care
+                        if (debug) {
+                            Log.d("DriveSyncController", "mDriveClient Suspended");
+                        }
                     }
                 },
                 new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult) {
+
+                        if (debug) {
+                            Log.d("DriveSyncController", "mDriveClient Connection Failed");
+                            Log.d("DriveSyncController", connectionResult.toString());
+                        }
+
                         // Resolve
                         if (!connectionResult.hasResolution()) {
                             // Show the localized error dialog
@@ -126,13 +138,31 @@ public class DriveSyncController implements FileResultsReadyCallback {
                             Log.e("GoogleApiClient", "Exception while starting resolution activity");
                         }
                     }
-                }
+                },
+                debug
         );
 
+        if (debug) {
+            Log.d("DriveSyncController", "Connecting mDriveApiClient");
+        }
+
         mDriveClient.connect();
+
         mDriveLayer = new DriveLayer(mDriveClient, this);
+        mDriveLayer.setDebug(debug);
+
+        if (debug) {
+            Log.d("DriveSyncController", "Getting Database Path");
+        }
+
         localDb = context.getDatabasePath(dbName);
+
+        if (debug) {
+            Log.d("Database Path", localDb.toString());
+        }
+
         mRequestQueue = new LinkedList<>();
+
         this.newerStatusCallback = newerStatusCallback;
     }
 
@@ -156,6 +186,21 @@ public class DriveSyncController implements FileResultsReadyCallback {
      */
     public static DriveSyncController get(@NonNull Context context, @NonNull SQLiteOpenHelper dbHelper, @Nullable NewerDatabaseCallback newerStatusCallback) {
         return new DriveSyncController(context, dbHelper.getDatabaseName(), newerStatusCallback);
+    }
+
+    /**
+     * Flag for debug logging
+     */
+    private static boolean debug;
+
+    /**
+     * Sets the debug flag
+     * @param debug the debug status
+     * @return this, for chaining calls
+     */
+    public DriveSyncController setDebug(boolean debug) {
+        DriveSyncController.debug = debug;
+        return this;
     }
 
     private void queue(int key) {

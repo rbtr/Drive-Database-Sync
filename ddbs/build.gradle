@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 2
-        versionName "0.0.2"
+        versionName "0.0.4"
     }
     buildTypes {
         release {
@@ -27,9 +27,9 @@ dependencies {
 
 publish {
     userOrg = 'athingunique'
-    groupId = 'com.github'
+    groupId = 'com.github.athingunique'
     artifactId = 'ddbs'
-    publishVersion = '0.0.2'
+    publishVersion = '0.0.4'
     description = 'A Google Drive Sync Layer for Android SQLite Database'
     website = 'https://github.com/athingunique/Drive-Database-Sync'
     issueTracker = "${website}/issues"
