@@ -23,7 +23,9 @@ This project is hosted on JCenter. To include it, add the noted lines from the f
 
 # How to use
 See Example app and [JavaDoc](https://athingunique.github.io/ddbs-doc/) provided.
-This is currently a proof-of-concept style Library; as such, some implementation details (like thread-safety) are left to you to implement.
+This library provides simple on-demand syncing of local SQLite Databases.
+This is currently a proof-of-concept style Library; as such, some implementation details (like thread-safety and automated syncing) are left to you to implement.
+
 
 # Example
 The Example application demos putting some data (the current date) in a database, putting the database in Drive, deleting the local database, pulling the database out of Drive, etc. It should give you a basic idea of how to interface with this Library.
@@ -32,6 +34,8 @@ The Example application demos putting some data (the current date) in a database
 [JavaDoc](https://athingunique.github.io/ddbs-doc/)
 
 # Version notes
+[0.0.5] Added GoogleApiClient connection checks
+[0.0.4] Added some debug logging and flags
 [0.0.3] Pushed to JCenter
 
 # Credits
